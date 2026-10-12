@@ -1,7 +1,6 @@
-export async function fetchData() {
-  const res = await fetch('http://localhost:3000/dashboard', {
-    cache: 'no-cache',
-  });
+import { makeRequest } from '@/lib/services/base-api';
+import type { DashboardData } from './page';
 
-  return res.json();
+export async function fetchData(): Promise<DashboardData> {
+  return makeRequest<DashboardData>('dashboard', {}, 'GET');
 }

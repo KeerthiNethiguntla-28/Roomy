@@ -1,8 +1,7 @@
+'use client';
 import * as React from 'react';
-import type { Metadata } from 'next';
 import Grid from '@mui/material/Unstable_Grid2';
 
-import { config } from '@/config';
 import { Budget } from '@/components/dashboard/overview/budget';
 import { Sales } from '@/components/dashboard/overview/sales';
 import { TotalCustomers } from '@/components/dashboard/overview/total-customers';
@@ -11,7 +10,6 @@ import { TotalReports } from '@/components/dashboard/overview/total-reports';
 
 import { fetchData } from './api';
 
-export const metadata = { title: `Overview | Dashboard | ${config.site.name}` } satisfies Metadata;
 export interface DashboardData {
   usersCount: number;
   subscribedUsersCount: number;
@@ -34,8 +32,16 @@ export interface DashboardData {
   postsYearByYear: { name: string; data: number[] }[];
 }
 
-export default async function Page(): Promise<React.JSX.Element> {
-  const dashboardData: DashboardData = (await fetchData()) as DashboardData;
+export default function Page(): React.JSX.Element {
+  const [dashboardData, setDashboardData] = React.useState<DashboardData | null>(null);
+  const [error, setError] = React.useState(false);
+  React.useEffect(() => {
+    let active = true;
+    fetchData().then(data => { if (active) setDashboardData(data); }).catch(() => { if (active) setError(true); });
+    return () => { active = false; };
+  }, []);
+  if (error) return <p>Unable to load dashboard. Check your session and API configuration.</p>;
+  if (!dashboardData) return <p>Loading dashboard...</p>;
 
   return (
     <Grid container spacing={3}>

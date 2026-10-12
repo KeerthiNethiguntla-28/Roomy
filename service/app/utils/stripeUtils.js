@@ -1,12 +1,13 @@
 import stripe from 'stripe';
 import logger from './logger.js';
-const stripeClient = new stripe(
-  'sk_test_51P4y96IvqvtAvGHOaP1BkE6UcDHvSOUKCt8Cc70If3xRvVe7zijtIccNXe0LNuOqoy6R1xAXceUuqcNk28jg4vDy00tHJLIlTf'
-);
+const getStripeClient = () => {
+  if (!process.env.STRIPE_SECRET_KEY) throw Object.assign(new Error('Stripe is not configured'), { status: 503 });
+  return new stripe(process.env.STRIPE_SECRET_KEY);
+};
 
 export const getStripeCustomerByEmail = async (email) => {
   try {
-    const customers = await stripeClient.customers.list({
+    const customers = await getStripeClient().customers.list({
       email,
       limit: 1,
     });
@@ -17,7 +18,7 @@ export const getStripeCustomerByEmail = async (email) => {
 };
 
 export const getCustomerSubscriptions = async (customerId) => {
-  const subscriptions = await stripeClient.subscriptions.list({
+  const subscriptions = await getStripeClient().subscriptions.list({
     customer: customerId,
     status: 'active',
     limit: 1,
@@ -27,7 +28,7 @@ export const getCustomerSubscriptions = async (customerId) => {
 };
 
 export const createBillingPortalSession = async (customerId, return_url) => {
-  const sessions = await stripeClient.billingPortal.sessions.create({
+  const sessions = await getStripeClient().billingPortal.sessions.create({
     customer: customerId,
     return_url: return_url,
   });
@@ -36,7 +37,7 @@ export const createBillingPortalSession = async (customerId, return_url) => {
 };
 
 export const createStripeCustomer = async (userEmail, auth0UserId) => {
-  const customer = await stripeClient.customers.create({
+  const customer = await getStripeClient().customers.create({
     email: userEmail,
     metadata: {
       userId: auth0UserId,
@@ -53,7 +54,7 @@ export const createCheckoutSession = async (
   lineItems,
   auth0UserId
 ) => {
-  const session = await stripeClient.checkout.sessions.create({
+  const session = await getStripeClient().checkout.sessions.create({
     success_url: successUrl,
     cancel_url: cancelUrl,
     payment_method_types: ['card'],
@@ -71,7 +72,7 @@ export const createCheckoutSession = async (
 };
 
 export const constructStripeEvent = async (rawBody, sig) => {
-  const event = stripeClient.webhooks.constructEvent(
+  const event = getStripeClient().webhooks.constructEvent(
     rawBody,
     sig,
     process.env.WEBHOOK_SIGNING_SECRET
@@ -81,17 +82,17 @@ export const constructStripeEvent = async (rawBody, sig) => {
 };
 
 export const retrieveSubscriptions = async (subscription) => {
-  const res = await stripeClient.subscriptions.retrieve(subscription);
+  const res = await getStripeClient().subscriptions.retrieve(subscription);
   return res;
 };
 
 export const retrieveCustomer = async (customer) => {
-  const res = await stripeClient.customers.retrieve(customer);
+  const res = await getStripeClient().customers.retrieve(customer);
   return res;
 };
 
 export const getSubscriptions = async () => {
-  const subscriptions = await stripeClient.subscriptions.list({
+  const subscriptions = await getStripeClient().subscriptions.list({
     status: 'active',
   });
 
@@ -99,6 +100,6 @@ export const getSubscriptions = async () => {
 };
 
 export const getStripeBalance = async () => {
-  const balance = await stripeClient.balance.retrieve();
+  const balance = await getStripeClient().balance.retrieve();
   return balance;
 };

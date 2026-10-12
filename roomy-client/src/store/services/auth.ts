@@ -1,7 +1,6 @@
 import { LoginReq, LoginRes, RegisterReq, RegisterRes } from "@/models/login/login";
 import { apiSlice } from "../baseApiSlice";
 import User from "@/models/user-model";
-import { getAuthToken } from "@/lib/cookies";
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
@@ -20,24 +19,21 @@ export const authApi = apiSlice.injectEndpoints({
       }),
     }),
     updateUser: build.mutation({
-      query: (id: number) => ({
-        url: `/users/deletenote/${id}`,
-        method: "DELETE",
+      query: (body: Partial<User>) => ({
+        url: "/users/update",
+        method: "PUT",
+        body,
       }),
     }),
     deleteUser: build.mutation({
-      query: (id: number) => ({
-        url: `/users/deletenote/${id}`,
+      query: () => ({
+        url: "/users/delete",
         method: "DELETE",
       }),
     }),
     getUserContext: build.query<User, { skip?: boolean }>({
-      query: (options = {}) => ({
+      query: () => ({
         url: "/users/context",
-        headers: {
-          Authorization: getAuthToken(),
-        },
-        skip: options.skip,
       }),
     }),
   }),

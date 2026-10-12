@@ -1,8 +1,6 @@
 import { apiSlice } from "../baseApiSlice";
 import { FilterInitialState } from "../slices/postFilter-slice";
-import { AUTH_TOKEN_USER } from "@/test";
 
-const AUTH_TOKEN = AUTH_TOKEN_USER;
 
 export interface Post {
   title: string;
@@ -38,9 +36,6 @@ export const postApi = apiSlice.injectEndpoints({
     getPosts: build.query<CompletePostDetails[], FilterInitialState>({
       query: (filterDetails) => ({
         url: "/posts",
-        headers: {
-          Authorization: AUTH_TOKEN,
-        },
         params: {
           city: filterDetails.city,
           bathCount: filterDetails.bathCount,
@@ -77,18 +72,12 @@ export const postApi = apiSlice.injectEndpoints({
         url: "/posts/create",
         method: "POST",
         body,
-        headers: {
-          Authorization: AUTH_TOKEN,
-        },
         formdata: true,
       }),
     }),
     getPostById: build.query<CompletePostDetails, string>({
       query: (id) => ({
         url: `/posts/${id}`,
-        headers: {
-          Authorization: AUTH_TOKEN,
-        },
       }),
       transformResponse: (response: any) => {
         console.log(response, "response");
@@ -116,9 +105,6 @@ export const postApi = apiSlice.injectEndpoints({
     getMyPosts: build.query<UserPosts[], void>({
       query: () => ({
         url: "/posts/user-posts",
-        headers: {
-          Authorization: AUTH_TOKEN,
-        },
       }),
       transformResponse: (response: any) => {
         return response.map((post: any) => ({
@@ -147,9 +133,6 @@ export const postApi = apiSlice.injectEndpoints({
       query: (id) => ({
         url: `/posts/${id}`,
         method: "DELETE",
-        headers: {
-          Authorization: AUTH_TOKEN,
-        },
       }),
       invalidatesTags: ["Post"],
     }),

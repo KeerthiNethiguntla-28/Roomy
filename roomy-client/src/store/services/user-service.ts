@@ -1,7 +1,5 @@
-import { AUTH_TOKEN_USER } from "@/test";
 import { apiSlice } from "../baseApiSlice";
 
-const AUTH_TOKEN = AUTH_TOKEN_USER;
 
 export interface User {
   _id: string;
@@ -19,9 +17,6 @@ export const userApi = apiSlice.injectEndpoints({
     getUser: build.query<User, void>({
       query: () => ({
         url: "/users/context",
-        headers: {
-          Authorization: AUTH_TOKEN,
-        },
       }),
       transformResponse: (response: User) => {
         const resTrans: User = {
@@ -38,9 +33,6 @@ export const userApi = apiSlice.injectEndpoints({
         url: "/users/update",
         method: "PUT",
         body,
-        headers: {
-          Authorization: AUTH_TOKEN,
-        },
       }),
     }),
   }),

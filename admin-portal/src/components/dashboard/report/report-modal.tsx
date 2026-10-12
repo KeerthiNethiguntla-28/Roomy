@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import { House, Image, Info, User } from '@phosphor-icons/react/dist/ssr';
 import ImageGallery from 'react-image-gallery';
 
-import { type Post } from '@/types/post';
+import { type Report } from '@/types/report';
 import PropertyMap from '@/components/ui/property-map';
 import { statusColors } from '@/styles/theme/color-schemes';
 
@@ -18,7 +18,7 @@ export default function PostModal({
   selectedReport,
   handleCloseModal,
 }: {
-  selectedPost: Post;
+  selectedReport: Report;
   handleCloseModal: () => void;
 }): React.JSX.Element {
   const selectedPost = selectedReport.post;
@@ -193,11 +193,6 @@ export default function PostModal({
                 showThumbnails
                 showFullscreenButton
                 showPlayButton={false}
-                styles={{
-                  containerStyle: {
-                    borderRadius: '8px', // Round the corners of the image gallery container
-                  },
-                }}
               />
             </CardContent>
           </Card>

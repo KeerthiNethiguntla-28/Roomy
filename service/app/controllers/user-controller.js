@@ -65,7 +65,8 @@ export const deleteUser = async (req, res) => {
 export const getUserContext = async (req, res) => {
   try {
     const user = req.user;
-    setResponse(res, user);
+    const { _id, name, email, phone, street, city, state, zip } = user;
+    setResponse(res, { _id, name, email, phone, street, city, state, zip });
   } catch (error) {
     setResponseWithError(res, error);
   }

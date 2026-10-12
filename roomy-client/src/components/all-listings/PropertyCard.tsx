@@ -58,13 +58,13 @@ export function PropertyCard({ propertyId, title, description, price, imageSrc, 
             <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
             <p className="text-sm text-gray-500 dark:text-gray-400">{price}</p>
           </div>
-          {isTag == "true" && <>{popUpConfirmation(isApproved, propertyId)}</>}
+          {isTag == "true" && <>{<PostActions isApproved={isApproved} propertyId={propertyId} />}</>}
         </div>
       </div>
     </>
   );
 }
-function popUpConfirmation(isApproved: boolean | undefined, propertyId: string | undefined) {
+function PostActions({ isApproved, propertyId }: { isApproved?: boolean; propertyId: string }) {
   const [
     deletePost,
     {
@@ -115,8 +115,7 @@ function popUpConfirmation(isApproved: boolean | undefined, propertyId: string |
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              You will be able to edit or delete this post. Deleting post can be undone and you'll have to recreate
-              it.
+              You will be able to edit or delete this post. Deleting a post is permanent. You will have to recreate it.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

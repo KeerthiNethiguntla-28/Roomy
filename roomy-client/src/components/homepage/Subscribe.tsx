@@ -54,7 +54,7 @@ export default function Subscribe() {
               Pricing
             </h1>
             <p className="mt-2 text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              Whether it's just you, or your entire team - we've got you
+              Whether it is just you, or your entire team - we have got you
               covered.
             </p>
           </div>

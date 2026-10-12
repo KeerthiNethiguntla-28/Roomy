@@ -6,7 +6,7 @@ import * as AdminUserController from '../controllers/admin-user-controller.js';
 const AdminUserRouter = express.Router();
 
 AdminUserRouter.post('/login', AdminUserController.login);
-AdminUserRouter.post('/register', AdminUserController.register);
+// Admin accounts are provisioned using npm run seed:admin; no public registration.
 AdminUserRouter.put(
   '/:id',
   (req, res, next) => {

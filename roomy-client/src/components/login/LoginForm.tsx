@@ -23,9 +23,7 @@ export default function LoginComponent() {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     const loginData: LoginReq = { email, password };
-    console.log("Logging in with:", loginData);
-    const response = await login(loginData);
-    console.log("Login successful:", response);
+    await login(loginData);
   };
 
   useEffect(() => {

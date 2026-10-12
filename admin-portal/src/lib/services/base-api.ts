@@ -1,4 +1,4 @@
-const serverURL = 'http://localhost:3000';
+const serverURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export const makeRequest = async <T>(
   path: string,
@@ -24,7 +24,9 @@ export const makeRequest = async <T>(
     body: JSON.stringify(body),
   });
 
-  return response.json();
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || 'Request failed');
+  return data;
 };
 
 export const setAuthToken = (token: string) => {

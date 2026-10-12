@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { createListenerMiddleware, configureStore } from "@reduxjs/toolkit";
 
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import authSlice from "./slices/auth";
@@ -8,6 +8,15 @@ import productSlice from "./slices/productList-slice";
 import addListingSlice from "./slices/addListing-slice";
 import postFilterSlice from "./slices/postFilter-slice";
 
+const sessionListener = createListenerMiddleware();
+sessionListener.startListening({
+  predicate: (action) =>
+    action.type === "auth/logout",
+  effect: (_action, api) => {
+    api.dispatch(apiSlice.util.resetApiState());
+  },
+});
+
 export const store = configureStore({
   reducer: {
     authSlice,
@@ -16,7 +25,10 @@ export const store = configureStore({
     postFilterSlice,
     [authApi.reducerPath]: authApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(apiSlice.middleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware()
+      .prepend(sessionListener.middleware)
+      .concat(apiSlice.middleware),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

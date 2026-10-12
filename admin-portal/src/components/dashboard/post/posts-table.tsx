@@ -29,11 +29,11 @@ function applyPagination(rows: Post[], page: number, rowsPerPage: number): Post[
   return rows.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
 }
 
-const filterStatusMap: { [key: string]: (string | boolean)[] } = {
-  'active=false': ['active', false],
-  'active=true': ['active', true],
-  'approved=false': ['approved', false],
-  'approved=true': ['approved', true],
+const filterStatusMap: { [key: string]: [string, string] } = {
+  'active=false': ['active', 'false'],
+  'active=true': ['active', 'true'],
+  'approved=false': ['approved', 'false'],
+  'approved=true': ['approved', 'true'],
   '': ['', ''],
 };
 
@@ -46,7 +46,7 @@ export function PostsTable(): React.JSX.Element {
   const [shouldRefetch, setShouldRefetch] = React.useState(false);
 
   const fetchCustomers = async () => {
-    const res = await makeRequest('posts/all-posts', { approved: 'false' }, 'GET');
+    const res = await makeRequest<Post[]>('posts/all-posts', { approved: 'false' }, 'GET');
     setCustomers(res);
     setCount(res.length); // Update the count with the total number of customers
     setShouldRefetch(false); // Reset shouldRefetch to false
@@ -98,13 +98,13 @@ export function PostsTable(): React.JSX.Element {
     filterStatus: string;
     searchCriteria: string;
   }) => {
-    filterStatus = filterStatusMap[filterStatus];
+    const [statusKey, statusValue] = filterStatusMap[filterStatus];
 
-    const res = await makeRequest(
+    const res = await makeRequest<Post[]>(
       'posts/all-posts',
       {
         [searchCriteria]: searchQuery,
-        [filterStatus[0]]: filterStatus[1],
+        ...(statusKey ? { [statusKey]: statusValue } : {}),
       },
       'GET'
     );
@@ -147,7 +147,7 @@ export function PostsTable(): React.JSX.Element {
                       />
                     </TableCell>
                     <TableCell>
-                      <Chip color={statusColors[row.active]} label={row.active ? 'Active' : 'Inactive'} size="small" />
+                      <Chip color={statusColors[row.active ? 'active' : 'inactive']} label={row.active ? 'Active' : 'Inactive'} size="small" />
                     </TableCell>
                     <TableCell>{row?.photos?.length}</TableCell>
                     <TableCell>{row.user.email}</TableCell>
