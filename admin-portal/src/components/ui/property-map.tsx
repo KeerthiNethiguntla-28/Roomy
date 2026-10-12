@@ -7,7 +7,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Card, CardContent, CardHeader, Typography } from '@mui/material';
 import ReactDOM from 'react-dom';
 
-mapboxgl.accessToken = 'pk.eyJ1IjoianV0dHUiLCJhIjoiY2x2NHhlbG5wMGNzNjJqcDV6cThhZmVnaCJ9.xAOGHa9cDK16JwlUkMmmdA';
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
 const MarkerComponent = ({ price }: { price: number }) => (
   <div
@@ -37,7 +37,7 @@ export default function PropertyMap({ mapsInfo }: { mapsInfo: PropertyMapProps }
   console.log(mapsInfo, 'mapsInfo');
 
   useEffect(() => {
-    if (!mapContainerRef.current) return;
+    if (!mapContainerRef.current || !mapboxgl.accessToken) return;
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v12',
@@ -51,6 +51,8 @@ export default function PropertyMap({ mapsInfo }: { mapsInfo: PropertyMapProps }
 
     return () => map.remove();
   }, [mapsInfo]);
+
+  if (!mapboxgl.accessToken) return <p>Map unavailable.</p>;
 
   return (
     <section className="w-full px-4 md:px-6 mt-6">

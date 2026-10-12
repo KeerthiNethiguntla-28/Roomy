@@ -37,8 +37,8 @@ export function ReportsTable(): React.JSX.Element {
   const [selectedReport, setSelectedReport] = React.useState<Report | null>(null); // State for selected posts
   const [shouldRefetch, setShouldRefetch] = React.useState(false);
 
-  const fetchPendingReports = async (queryParams) => {
-    const res = await makeRequest('reports/all-reports', { status: 'pending' }, 'GET');
+  const fetchPendingReports = async () => {
+    const res = await makeRequest<Report[]>('reports/all-reports', { status: 'pending' }, 'GET');
     setReports(res);
     setCount(res.length); // Update the count with the total number of reports
     setShouldRefetch(false); // Reset shouldRefetch to false
@@ -76,8 +76,8 @@ export function ReportsTable(): React.JSX.Element {
     setSelectedReport(null);
   };
 
-  const searchReports = async ({ searchQuery, filterStatus, searchCriteria }) => {
-    const res = await makeRequest(
+  const searchReports = async ({ searchQuery, filterStatus, searchCriteria }: { searchQuery: string; filterStatus: string; searchCriteria: string }) => {
+    const res = await makeRequest<Report[]>(
       'reports/all-reports',
       { [searchCriteria]: searchQuery, status: filterStatus },
       'GET'

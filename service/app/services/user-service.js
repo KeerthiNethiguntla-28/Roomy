@@ -31,12 +31,12 @@ export const register = async (user) => {
 export const login = async (user) => {
   const userFromDb = await User.findOne({ email: user.email });
   if (!userFromDb) {
-    throw new Error('User not found');
+    throw Object.assign(new Error('Invalid email or password'), { status: 401 });
   }
 
   const isPasswordValid = await bcrypt.compare(user.password, userFromDb.password);
   if (!isPasswordValid) {
-    throw new Error('Invalid password');
+    throw Object.assign(new Error('Invalid email or password'), { status: 401 });
   }
 
   const token = jwt.sign(

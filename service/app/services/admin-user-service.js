@@ -18,12 +18,12 @@ export const register = async (adminUser) => {
 export const login = async (adminUser) => {
   const user = await AdminUser.findOne({ email: adminUser.email });
   if (!user) {
-    throw new Error('Admin User not found');
+    throw Object.assign(new Error('Invalid email or password'), { status: 401 });
   }
 
   const isPasswordValid = await bcrypt.compare(adminUser.password, user.password);
   if (!isPasswordValid) {
-    throw new Error('Invalid password');
+    throw Object.assign(new Error('Invalid email or password'), { status: 401 });
   }
 
   const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {

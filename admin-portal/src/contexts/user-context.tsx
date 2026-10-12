@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import type { User } from '@/types/user';
+import type { AdminUser as User } from '@/types/admin-user';
 import { authClient } from '@/lib/auth/client';
 import { logger } from '@/lib/default-logger';
 

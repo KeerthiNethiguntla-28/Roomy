@@ -1,7 +1,5 @@
-import { AUTH_TOKEN_USER } from "@/test";
 import { apiSlice } from "../baseApiSlice";
 
-const AUTH_TOKEN = AUTH_TOKEN_USER;
 
 export interface CreateReportRequest {
   description: string;
@@ -15,9 +13,6 @@ export const reportApi = apiSlice.injectEndpoints({
         url: "/reports/create",
         method: "POST",
         body,
-        headers: {
-          Authorization: AUTH_TOKEN,
-        },
       }),
     }),
   }),

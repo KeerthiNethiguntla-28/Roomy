@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Grid, MenuItem, Select } from '@mui/material';
+import { Grid, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack';
 import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import { SealCheck as UploadIcon } from '@phosphor-icons/react/dist/ssr/SealCheck';
 
-export function PostsFilters({ onApproveAll, searchPosts }: { onApproveAll: () => void }): React.JSX.Element {
+export function PostsFilters({ onApproveAll, searchPosts }: { onApproveAll: () => void; searchPosts: (params: { searchQuery: string; filterStatus: string; searchCriteria: string }) => void }): React.JSX.Element {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [filterStatus, setFilterStatus] = React.useState('approved=false');
   const [searchCriteria, setSearchCriteria] = React.useState('post');
@@ -18,12 +18,12 @@ export function PostsFilters({ onApproveAll, searchPosts }: { onApproveAll: () =
     searchPosts({ searchQuery: event.target.value, filterStatus, searchCriteria });
   };
 
-  const handleFilterStatusChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleFilterStatusChange = (event: SelectChangeEvent<string>) => {
     setFilterStatus(event.target.value as string);
     searchPosts({ searchQuery, filterStatus: event.target.value as string, searchCriteria });
   };
 
-  const handleSearchCriteriaChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleSearchCriteriaChange = (event: SelectChangeEvent<string>) => {
     setSearchCriteria(event.target.value as string);
     searchPosts({ searchQuery, filterStatus, searchCriteria: event.target.value as string });
   };

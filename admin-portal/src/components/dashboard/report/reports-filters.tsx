@@ -7,7 +7,7 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 
-export function ReportsFilters({ searchReports }): React.JSX.Element {
+export function ReportsFilters({ searchReports }: { searchReports: (params: { searchQuery: string; filterStatus: string; searchCriteria: string }) => void }): React.JSX.Element {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [filterStatus, setFilterStatus] = React.useState('pending');
   const [searchCriteria, setSearchCriteria] = React.useState('post');

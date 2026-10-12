@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ReduxProvider } from "./StoreProvider";
@@ -69,7 +70,7 @@ export default function RootLayout({
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <ReduxProvider>{children}</ReduxProvider>
+        <ReduxProvider><Suspense fallback={<p>Loading...</p>}>{children}</Suspense></ReduxProvider>
       </body>
     </html>
   );

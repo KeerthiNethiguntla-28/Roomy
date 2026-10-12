@@ -13,6 +13,7 @@ const authSlice = createSlice({
   reducers: {
     logout: (_state) => {
       deleteAuthToken();
+      return {};
     },
   },
   extraReducers: (builder) => {

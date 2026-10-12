@@ -1,10 +1,55 @@
-import { setResponse, setResponseWithError } from './response-handler.js';
-import * as PostService from '../services/post-service.js';
-import Post from '../models/post.js';
+import { setResponse, setResponseWithError } from "./response-handler.js";
+import * as PostService from "../services/post-service.js";
+import Post from "../models/post.js";
 
 export const createPost = async (req, res) => {
   try {
-    const post = req.body;
+    const {
+      title,
+      description,
+      streetAddress,
+      unitNo,
+      city,
+      stateCode,
+      zipCode,
+      latitude,
+      longitude,
+      phoneNumber,
+      startDateRange,
+      endDateRange,
+      price,
+      bedCount,
+      bathCount,
+      numberOfSpots,
+      nearbyPlaces,
+      homeType,
+      utilities,
+      amenities,
+      foodPreference,
+    } = req.body;
+    const post = {
+      title,
+      description,
+      streetAddress,
+      unitNo,
+      city,
+      stateCode,
+      zipCode,
+      latitude,
+      longitude,
+      phoneNumber,
+      startDateRange,
+      endDateRange,
+      price,
+      bedCount,
+      bathCount,
+      numberOfSpots,
+      nearbyPlaces,
+      homeType,
+      utilities,
+      amenities,
+      foodPreference,
+    };
     post.user = req.user;
     post.photos = req.files;
     const response = await PostService.createPost(post);
@@ -88,11 +133,11 @@ export const getAllPosts = async (req, res) => {
     });
 
     if (req.query.title) {
-      req.query.title = { $regex: req.query.title, $options: 'i' };
+      req.query.title = { $regex: req.query.title, $options: "i" };
     }
 
     if (req.query.description) {
-      req.query.description = { $regex: req.query.description, $options: 'i' };
+      req.query.description = { $regex: req.query.description, $options: "i" };
     }
 
     const response = await PostService.getAllPosts(req.query);
@@ -118,21 +163,25 @@ export const updatePost = async (req, res) => {
 
     const updatedFields = {};
     const allowedFields = [
-      'startDateRange',
-      'endDateRange',
-      'price',
-      'bedCount',
-      'bathCount',
-      'numberOfSpots',
+      "startDateRange",
+      "endDateRange",
+      "price",
+      "bedCount",
+      "bathCount",
+      "numberOfSpots",
     ];
 
     allowedFields.forEach((field) => {
-      if (req.body[field]) {
+      if (req.body[field] !== undefined) {
         updatedFields[field] = req.body[field];
       }
     });
 
-    const response = await PostService.updatePost(id, updatedFields);
+    const response = await PostService.updatePost(
+      id,
+      updatedFields,
+      req.user._id,
+    );
     setResponse(res, response);
   } catch (error) {
     setResponseWithError(res, error);
@@ -142,7 +191,7 @@ export const updatePost = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
     const id = req.params.id;
-    const response = await PostService.deletePost(id);
+    const response = await PostService.deletePost(id, req.user._id);
     setResponse(res, response);
   } catch (error) {
     setResponseWithError(res, error);
@@ -168,14 +217,15 @@ export const approveAllPosts = async (req, res) => {
     // const posts = await PostService.getAllPosts({ approved: true });
 
     if (!posts.length) {
-      throw new Error('No posts to approve');
+      throw new Error("No posts to approve");
     }
 
-    posts.forEach(async (post) => {
-      await PostService.approvePost(post._id, adminUser);
-    });
+    for (const post of posts) {
+      if (post.active && !post.approved)
+        await PostService.approvePost(post._id, adminUser);
+    }
 
-    setResponse(res, { message: 'All posts approved', success: true });
+    setResponse(res, { message: "All posts approved", success: true });
   } catch (error) {
     setResponseWithError(res, error);
   }

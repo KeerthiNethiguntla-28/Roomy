@@ -2,7 +2,7 @@
 import mapboxgl from "mapbox-gl";
 import { useEffect, useRef, useState } from "react";
 import "mapbox-gl/dist/mapbox-gl.css";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { useSelector } from "react-redux";
 import { postApi } from "@/store/services/post-service";
 import { PropertyCard } from "./PropertyCard";
@@ -11,7 +11,7 @@ import { createSelector } from "@reduxjs/toolkit";
 import { TomTomDetailsPopup } from "@/store/services/address-service";
 import { useAppSelector } from "@/store/store";
 import { useSearchParams } from "next/navigation";
-mapboxgl.accessToken = "pk.eyJ1IjoianV0dHUiLCJhIjoiY2x2NHhlbG5wMGNzNjJqcDV6cThhZmVnaCJ9.xAOGHa9cDK16JwlUkMmmdA";
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
 const MarkerComponent = ({ id }: { id: string }) => (
   <div
@@ -56,21 +56,26 @@ export default function TomTomMap() {
   const addressData = useSelector(selectTomTomData);
 
   useEffect(() => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || !mapboxgl.accessToken) return;
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/streets-v12",
       center: [lng, lat],
       zoom: zoom,
     });
+    const roots: ReturnType<typeof createRoot>[] = [];
     if (!addressData.isLoading && addressData.data) {
       addressData?.data.forEach((marker) => {
         const markerEl = document.createElement("div");
         markerEl.className = "marker";
-        ReactDOM.render(<MarkerComponent id={marker.price} />, markerEl);
+        const markerRoot = createRoot(markerEl);
+        roots.push(markerRoot);
+        markerRoot.render(<MarkerComponent id={marker.price} />);
 
         const popupEl = document.createElement("div");
-        ReactDOM.render(
+        const popupRoot = createRoot(popupEl);
+        roots.push(popupRoot);
+        popupRoot.render(
           <div style={{ width: "200px", height: "100px" }}>
             <PropertyCard
               key={marker.key}
@@ -78,10 +83,9 @@ export default function TomTomMap() {
               description={marker.description}
               price={`$${marker.price || 0} per month`}
               imageSrc={marker.imageSrc || "/next.svg"}
-              propertyId={""}
+              propertyId={marker.key}
             />
-          </div>,
-          popupEl
+          </div>
         );
 
         new mapboxgl.Marker(markerEl, { offset: [0, -20] })
@@ -97,12 +101,15 @@ export default function TomTomMap() {
       });
 
       return () => {
+        roots.forEach(root => root.unmount());
         if (map.current) {
           map.current.remove();
         }
       };
     }
   }, [lng, lat, zoom, addressData]);
+
+  if (!mapboxgl.accessToken) return <p>Map unavailable.</p>;
 
   if (addressData.isLoading)
     return (

@@ -24,7 +24,7 @@ export const addressApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getAddress: build.query<any, string>({
       query: (value: string) => ({
-        url: `https://api.tomtom.com/search/2/search/${value}.json?key=7wrfpEwSd7EWHdmBmVH6L46RvgsJ1n3V&countrySet=US&limit=5`,
+        url: `https://api.tomtom.com/search/2/search/${encodeURIComponent(value)}.json?key=${process.env.NEXT_PUBLIC_TOMTOM_KEY || ""}&countrySet=US&limit=5`,
       }),
       transformResponse: (responseData: any) => {
         return responseData.results.map(
